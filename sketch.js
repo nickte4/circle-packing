@@ -31,6 +31,7 @@ function preload() {
   img = loadImage('./2023.png'); 
 }
 
+// setup function
 function setup() {
   createCanvas(1440, 1440);
   img.loadPixels();
@@ -46,6 +47,7 @@ function setup() {
   }
 }
 
+// draw function
 function draw() {
   background(0);
 
