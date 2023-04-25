@@ -1,8 +1,14 @@
 let circleList = [];
+let spots = [];
+let img;
 
+// create circle function
 function createCircle() {
-  let centerX = random(width);
-  let centerY = random(height);
+  let r = int(random(0,spots.length));
+  let spot = spots[r];
+
+  let centerX = spot.x;
+  let centerY = spot.y;
   let validCircle = true;
 
   for (circle of circleList) {
@@ -14,16 +20,50 @@ function createCircle() {
   }
 
   // if the circle is not in another previously created circle, make it
-  if (validCircle) circleList.push(new Circle(centerX, centerY));
+  if (validCircle) {
+    return new Circle(centerX, centerY);
+  } else {
+    return null;
+  }
+}
+
+function preload() {
+  img = loadImage('./2023.png'); 
 }
 
 function setup() {
-  createCanvas(640, 360);
+  createCanvas(1440, 1440);
+  img.loadPixels();
+  for (let x = 0; x < img.width; x++) {
+    for (let y = 0; y < img.height; y++) {
+      let index = x + y * img.width;
+      let pixelColor = img.pixels[index * 4];
+      let pixelBrightness = brightness([pixelColor]);
+      if (pixelBrightness > 1) {
+        spots.push(createVector(x, y));
+      }
+    }
+  }
 }
 
 function draw() {
   background(0);
-  createCircle();
+
+  let total = 5;
+  let attempts = 0;
+  for (let i = 0; i < total; i++) {
+    let circle = createCircle();
+    if (circle !== null) {
+      circleList.push(circle);
+    }
+    attempts++;
+    if (attempts > 100) {
+      noLoop();
+      console.log("finished");
+      break;
+    }
+  }
+
   for (circle of circleList) {
     // if circle touches window edge, stop growing
     if (circle.edges()) {
@@ -38,7 +78,7 @@ function draw() {
             otherCircle.x,
             otherCircle.y
           );
-          if (distBtwnCircles < circle.r + otherCircle.r) {
+          if (distBtwnCircles - 4 < circle.r + otherCircle.r) {
             circle.growing = false;
             break;
           }
